@@ -46,13 +46,29 @@ namespace LibraryManagement.Repository
         }
 
        
-        public Task<Author> UpdateAuthorAsync(Author book)
+        public async Task<Author> UpdateAuthorAsync(UpdateAuthorDto authorDto)
         {
-            throw new NotImplementedException();
+            var existingAuthor = await _dbContext.Authors.FindAsync(authorDto.AuthorId);
+            if(existingAuthor==null)
+            {
+                return null;
+            }
+            existingAuthor.Name = authorDto.Name;
+            existingAuthor.DateOfBirth = authorDto.DateOfBirth;
+            existingAuthor.Nationality = authorDto.Nationality;
+            existingAuthor.BooksWritten = authorDto.BooksWritten;
+
+            await _dbContext.SaveChangesAsync();
+            return existingAuthor;
+           
         }
-        public Task<bool> Delete(int id)
+        public async Task<Author> DeleteAuthorAsync(int id)
         {
-            throw new NotImplementedException();
+            var todeleteAuthor = await _dbContext.Authors.FirstOrDefaultAsync(i => i.AuthorId == id);
+            
+            _dbContext.Authors.Remove(todeleteAuthor);
+            await _dbContext.SaveChangesAsync();
+            return todeleteAuthor;
         }
 
     }

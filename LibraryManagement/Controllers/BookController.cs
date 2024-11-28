@@ -67,5 +67,11 @@ namespace LibraryManagement.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
             }
         }
+        [HttpDelete]
+        public async Task<IActionResult>Delete(int id)
+        {
+            var book = await _repository.DeleteBookAsync(id);
+            return Ok($"Book delete with id {id} is successfull");
+        }
     }
 }

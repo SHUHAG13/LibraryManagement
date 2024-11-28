@@ -9,6 +9,6 @@ namespace LibraryManagement.Interfaces
         Task<Book> GetByIdAsync(int id);
         Task<Book> AddBookAsync(CreateBookDto book);
         Task<Book> UpdateBookAsync(Book book);
-        Task<bool> Delete(int id);
+        Task<bool> DeleteBookAsync(int id);
     }
 }

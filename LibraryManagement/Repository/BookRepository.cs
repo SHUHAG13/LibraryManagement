@@ -54,9 +54,12 @@ namespace LibraryManagement.Repository
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
-            throw new NotImplementedException();
+            var deleteBook = await _dbContext.Books.FirstOrDefaultAsync(i=>i.BookId==id);
+            _dbContext.Books.Remove(deleteBook);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
 
        

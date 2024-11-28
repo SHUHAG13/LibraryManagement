@@ -1,6 +1,7 @@
 ﻿using LibraryManagement.Interfaces;
 using LibraryManagement.Models.Domain;
 using LibraryManagement.Models.Domain.Dto;
+using LibraryManagement.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,9 +22,13 @@ namespace LibraryManagement.Controllers
         {
             try
             {
-                var books= await _repository.GetallAsync();
+                var authors= await _repository.GetallAsync();
+                if(authors == null)
+                {
+                    return NotFound("No author found");
+                }
                
-                return Ok(books);
+                return Ok(authors);
 
             }
             catch (Exception ex)
@@ -38,12 +43,12 @@ namespace LibraryManagement.Controllers
         {
             try
             {
-                var book = await _repository.GetByIdAsync(id);
-                if (book == null)
+                var author = await _repository.GetByIdAsync(id);
+                if (author == null)
                 {
                     return NotFound($"Author with id {id} not found");
                 }
-                return Ok(book);
+                return Ok(author);
 
             }
             catch (Exception ex)
@@ -55,13 +60,70 @@ namespace LibraryManagement.Controllers
         [HttpPost]
         public async Task<IActionResult>AddAuthor(CreateAuthorDto author)
         {
-            var newAuthor = await _repository.AddAuthorAsync(author);
-            if (newAuthor == null)
+            if (author == null)
             {
-                return BadRequest("Book cannot be null.");
+                return BadRequest("Author data cannot be null.");
             }
-            return CreatedAtAction(nameof(GetById), new { id = newAuthor.AuthorId }, newAuthor);
-            return Ok(author);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid input data.");
+            }
+            try
+            {
+                var newAuthor = await _repository.AddAuthorAsync(author);
+                return CreatedAtAction(nameof(GetById), new { id = newAuthor.AuthorId }, newAuthor);
+                return Ok(author);
+            }
+          
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error :{ex.Message}");
+            }
+
+        }
+        [HttpPut]
+        public async Task<IActionResult>UpdateAuthor(UpdateAuthorDto authorDto)
+        {
+            if (authorDto == null)
+            {
+                return BadRequest("Author data is required.");
+            }
+            try
+            {
+                var updatedAuthor = await _repository.UpdateAuthorAsync(authorDto);
+                if (updatedAuthor == null)
+                {
+
+                    return NotFound($"Author with ID {authorDto.AuthorId} not found.");
+                }
+                return Ok(updatedAuthor);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error :{ex.Message}");
+            }
+
+        }
+        [HttpDelete]
+        public async Task<IActionResult>Delete(int id)
+        {
+            try
+            {
+                var author = await _repository.DeleteAuthorAsync(id);
+                if(author==null)
+                {
+                  return NotFound($"Author with id {id}  not found");
+                }
+                return Ok($"Author with id {id} is deleted successfully");
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error :{ex.Message}");
+            }
+
+
         }
     }
 }
