@@ -25,7 +25,7 @@ namespace LibraryManagement.Controllers
                 var authors= await _repository.GetallAsync();
                 if(authors == null)
                 {
-                    return NotFound("No author found");
+                    return NoContent();
                 }
                
                 return Ok(authors);
@@ -115,7 +115,7 @@ namespace LibraryManagement.Controllers
                 {
                   return NotFound($"Author with id {id}  not found");
                 }
-                return Ok($"Author with id {id} is deleted successfully");
+                return NoContent();
 
             }
             catch (Exception ex)

@@ -24,7 +24,7 @@ namespace LibraryManagement.Controllers
                 var books = await _repository.GetallAsync();
                 if (books == null)
                 {
-                    return NotFound("Books not Found");
+                    return NoContent();
                 }
                 return Ok(books);
 
@@ -94,12 +94,12 @@ namespace LibraryManagement.Controllers
         {
             try
             {
-                var book = await _repository.DeleteBookAsync(id);
-                if(book==null)
+                var isDeleted = await _repository.DeleteBookAsync(id);
+                if(isDeleted==null)
                 {
                     return NotFound($"Book with id {id} is not found");
                 }
-                return Ok($"Book delete with id {id} is successfull");
+                return NoContent();
             }catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
