@@ -67,11 +67,44 @@ namespace LibraryManagement.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
             }
         }
+        [HttpPut]
+        public async Task<IActionResult>UpadateBook(UpdateBookDto updateDto )
+        {
+            if (updateDto == null)
+            {
+                return BadRequest("Book is required!!!");
+            }
+            try
+            {
+                var updateBook = await _repository.UpdateBookAsync(updateDto);
+                if (updateBook == null)
+                {
+                    return NotFound($"Book with id {updateBook.BookId} is not found");
+                }
+                return Ok(updateDto);
+            }catch(Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
+            }
+
+
+         }
         [HttpDelete]
         public async Task<IActionResult>Delete(int id)
         {
-            var book = await _repository.DeleteBookAsync(id);
-            return Ok($"Book delete with id {id} is successfull");
+            try
+            {
+                var book = await _repository.DeleteBookAsync(id);
+                if(book==null)
+                {
+                    return NotFound($"Book with id {id} is not found");
+                }
+                return Ok($"Book delete with id {id} is successfull");
+            }catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
+            }
+
         }
     }
 }

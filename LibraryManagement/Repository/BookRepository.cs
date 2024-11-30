@@ -49,17 +49,35 @@ namespace LibraryManagement.Repository
             return bookEntity;
         }
 
-        public Task<Book> UpdateBookAsync(Book book)
+        public async Task<Book> UpdateBookAsync(UpdateBookDto updateDto)
         {
-            throw new NotImplementedException();
+
+            var existingBook = await _dbContext.Books.FindAsync(updateDto.BookId);
+            if(existingBook == null)
+            {
+                return null;
+            }
+
+            existingBook.Title = updateDto.Title;
+            existingBook.ISBN = updateDto.ISBN;
+            existingBook.Price = updateDto.Price;
+            existingBook.PublishedYear = updateDto.PublishedYear;
+            existingBook.Genre = updateDto.Genre;
+          
+
+            await _dbContext.SaveChangesAsync();
+
+            return existingBook;
+
+            
         }
 
-        public async Task<bool> DeleteBookAsync(int id)
+        public async Task<Book> DeleteBookAsync(int id)
         {
             var deleteBook = await _dbContext.Books.FirstOrDefaultAsync(i=>i.BookId==id);
             _dbContext.Books.Remove(deleteBook);
             await _dbContext.SaveChangesAsync();
-            return true;
+            return deleteBook;
         }
 
        
