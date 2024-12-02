@@ -2,9 +2,8 @@
 using LibraryManagement.Interfaces;
 using LibraryManagement.Models.Domain;
 using LibraryManagement.Models.Domain.Dto;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace LibraryManagement.Repository
 {
@@ -16,18 +15,68 @@ namespace LibraryManagement.Repository
         {
             _dbContext = context;
         }
-        public async Task<List<Author>> GetallAsync()
+        public async Task<List<Response<Author>>> GetAllAsync()
         {
-            var authors = await _dbContext.Authors.Include(i => i.Books).ToListAsync();
+            try
+            {
+                var authors = await _dbContext.Authors.Include(a => a.Books).ToListAsync();
+                var responseList = authors.Select(author => new Response<Author>
+                {
+                    StatusCode = 200,
+                    Message = "Success",
+                    Data = author
+                }).ToList();
 
-            return authors;
-
+                return responseList;
+            }
+            catch (Exception ex)
+            {
+            return new List<Response<Author>>
+              {
+               new Response<Author>
+              {
+                StatusCode = 500,
+                Message = $"Internal server error: {ex.Message}",
+              }
+              };
+            }
         }
 
-        public async Task<Author> GetByIdAsync(int id)
+
+        public async Task<Response<Author>> GetByIdAsync(int id)
         {
-            return await _dbContext.Authors.FirstOrDefaultAsync(i => i.AuthorId == id);
+            try
+            {
+                var result = await _dbContext.Authors
+                    .Include(i => i.Books)
+                    .FirstOrDefaultAsync(i => i.AuthorId == id);
+
+                if(result == null)
+                {
+                    return new Response<Author>()
+                    {
+                        StatusCode = 404,
+                        Message = $"Author with id {id} not found"
+                    };
+                }
+
+                return new Response<Author>()
+                {
+                    StatusCode = 200,
+                    Message = "Success",
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Author>()
+                {
+                    StatusCode = 500,
+                    Message = $"Internal server error :{ex.Message}"
+                };
+            }
         }
+
         public async Task<Author> AddAuthorAsync(CreateAuthorDto author)
         {
             var authorDto = new Author
@@ -39,12 +88,20 @@ namespace LibraryManagement.Repository
                 BooksWritten=author.BooksWritten
 
             };
+            try
+            {
+                var newAuthor = await _dbContext.Authors.AddAsync(authorDto);
+                await _dbContext.SaveChangesAsync();
+                return authorDto;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Internal server error: {ex.Message}", ex); 
+            }
 
-            var newAuthor = await _dbContext.Authors.AddAsync(authorDto);
-            await _dbContext.SaveChangesAsync();
-            return authorDto;
+
+
         }
-
        
         public async Task<Author> UpdateAuthorAsync(UpdateAuthorDto authorDto)
         {
@@ -62,6 +119,7 @@ namespace LibraryManagement.Repository
             return existingAuthor;
            
         }
+
         public async Task<Author> DeleteAuthorAsync(int id)
         {
             var todeleteAuthor = await _dbContext.Authors.FirstOrDefaultAsync(i => i.AuthorId == id);

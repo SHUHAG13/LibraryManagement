@@ -21,9 +21,10 @@ namespace LibraryManagement
             builder.Services.AddDbContext<ManagementDbContext>(options=>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IBookInterface, BookRepository>();
+            builder.Services.AddScoped<IStudentInterface, StudentRepository>();
             builder.Services.AddScoped<IAuthorInterface, AuthorRepository>();
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
-           options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                   options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 
 

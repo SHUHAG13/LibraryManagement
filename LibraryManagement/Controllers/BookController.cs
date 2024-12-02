@@ -16,95 +16,41 @@ namespace LibraryManagement.Controllers
         {
             _repository = repository;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var books = await _repository.GetallAsync();
-                if (books == null)
-                {
-                    return NoContent();
-                }
-                return Ok(books);
-
-            }catch(Exception ex){
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-            
+            var books = await _repository.GetallAsync();
+            return Ok(books);
         }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult>GetbyId(int id)
         {
-            try
-            {
-                var book = await _repository.GetByIdAsync(id);
-                if (book == null)
-                {
-                    return NotFound($"Book with id {id} not found");
-                }
-                return Ok(book);
-
-            }catch(Exception ex)
-            {
-                return StatusCode(500, $"Internal server error :{ex.Message}");
-            }
-            
+            var book = await _repository.GetByIdAsync(id);
+            return Ok(book);
         }
+
         [HttpPost]
         public async Task<IActionResult>AddBook(CreateBookDto book)
         {
-            if (book == null)
-            {
-                return BadRequest("Book cannot be null.");
-            }
-            try
-            {
-                var newBook = await _repository.AddBookAsync(book);
-                return CreatedAtAction(nameof(GetbyId), new { id = newBook.BookId }, newBook);
-            }catch(Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
-            }
+            var newBook = await _repository.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetbyId), 
+                new { id = newBook.BookId }, newBook);
         }
+
         [HttpPut]
         public async Task<IActionResult>UpadateBook(UpdateBookDto updateDto )
         {
-            if (updateDto == null)
-            {
-                return BadRequest("Book is required!!!");
-            }
-            try
-            {
-                var updateBook = await _repository.UpdateBookAsync(updateDto);
-                if (updateBook == null)
-                {
-                    return NotFound($"Book with id {updateBook.BookId} is not found");
-                }
-                return Ok(updateDto);
-            }catch(Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
-            }
+            var updateBook = await _repository.UpdateBookAsync(updateDto);
+            return Ok(updateDto);
+        }
 
-
-         }
         [HttpDelete]
         public async Task<IActionResult>Delete(int id)
         {
-            try
-            {
-                var isDeleted = await _repository.DeleteBookAsync(id);
-                if(isDeleted==null)
-                {
-                    return NotFound($"Book with id {id} is not found");
-                }
-                return NoContent();
-            }catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}. Inner Exception: {ex.InnerException?.Message}");
-            }
-
+            var isDeleted = await _repository.DeleteBookAsync(id);
+            return NoContent();
         }
     }
 }
