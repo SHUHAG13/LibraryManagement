@@ -23,6 +23,7 @@ namespace LibraryManagement
             builder.Services.AddScoped<IBookInterface, BookRepository>();
             builder.Services.AddScoped<IStudentInterface, StudentRepository>();
             builder.Services.AddScoped<IAuthorInterface, AuthorRepository>();
+            builder.Services.AddScoped<ILibraryInterface, LibraryRepository>();
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
