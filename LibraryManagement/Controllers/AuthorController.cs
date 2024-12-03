@@ -47,6 +47,7 @@ namespace LibraryManagement.Controllers
         public async Task<IActionResult>Delete(int id)
         {
             var author = await _repository.DeleteAuthorAsync(id);
+
             return NoContent();
         }
     }

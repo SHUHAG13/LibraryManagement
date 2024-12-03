@@ -46,7 +46,7 @@ namespace LibraryManagement.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult>DeleteStudent(int id)
         {
-            var deletedStudent = await _repository.DeleteStudentAsync(id);
+            await _repository.DeleteStudentAsync(id);
             return NoContent();
         }
         }

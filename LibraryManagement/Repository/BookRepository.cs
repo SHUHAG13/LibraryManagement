@@ -18,66 +18,99 @@ namespace LibraryManagement.Repository
         }
         public async Task<List<Book>> GetallAsync()
         {
-            return await _dbContext.Books.ToListAsync();
-           
+            try
+            {
+                return await _dbContext.Books.ToListAsync();
+            }catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
         public async Task<Book> GetByIdAsync(int id)
         {
-            return await _dbContext.Books.FirstOrDefaultAsync(i => i.BookId == id);
+            try
+            {
+                return await _dbContext.Books.FirstOrDefaultAsync(i => i.BookId == id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
         public async Task<Book> AddBookAsync(CreateBookDto book)
         {
-            //Mapping CreateBookDto to Book entity
-            var bookEntity = new Book
+            try
             {
-               
-                Title = book.Title,
-                ISBN = book.ISBN,
-                PublishedYear = book.PublishedYear,
-                Genre = book.Genre,
-                Price = book.Price,
-                AuthorId = book.AuthorId
+                //Mapping CreateBookDto to Book entity
+                var bookEntity = new Book
+                {
 
-            };
+                    Title = book.Title,
+                    ISBN = book.ISBN,
+                    PublishedYear = book.PublishedYear,
+                    Genre = book.Genre,
+                    Price = book.Price,
+                    AuthorId = book.AuthorId
+
+                };
 
 
-            await _dbContext.Books.AddAsync(bookEntity);
-            await _dbContext.SaveChangesAsync();
-           
-
-            return bookEntity;
+                await _dbContext.Books.AddAsync(bookEntity);
+                await _dbContext.SaveChangesAsync();
+                return bookEntity;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
         public async Task<Book> UpdateBookAsync(UpdateBookDto updateDto)
         {
 
-            var existingBook = await _dbContext.Books.FindAsync(updateDto.BookId);
-            if(existingBook == null)
+            try
             {
-                return null;
+                var existingBook = await _dbContext.Books.FindAsync(updateDto.BookId);
+                if (existingBook == null)
+                {
+                    return null;
+                }
+
+                existingBook.Title = updateDto.Title;
+                existingBook.ISBN = updateDto.ISBN;
+                existingBook.Price = updateDto.Price;
+                existingBook.PublishedYear = updateDto.PublishedYear;
+                existingBook.Genre = updateDto.Genre;
+                await _dbContext.SaveChangesAsync();
+                return existingBook;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
             }
 
-            existingBook.Title = updateDto.Title;
-            existingBook.ISBN = updateDto.ISBN;
-            existingBook.Price = updateDto.Price;
-            existingBook.PublishedYear = updateDto.PublishedYear;
-            existingBook.Genre = updateDto.Genre;
-          
 
-            await _dbContext.SaveChangesAsync();
-
-            return existingBook;
-
-            
         }
 
         public async Task<Book> DeleteBookAsync(int id)
         {
-            var deleteBook = await _dbContext.Books.FirstOrDefaultAsync(i=>i.BookId==id);
-            _dbContext.Books.Remove(deleteBook);
-            await _dbContext.SaveChangesAsync();
-            return deleteBook;
+            try
+            {
+                var deleteBook = await _dbContext.Books.FirstOrDefaultAsync(i => i.BookId == id);
+                _dbContext.Books.Remove(deleteBook);
+                await _dbContext.SaveChangesAsync();
+                return deleteBook;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
        

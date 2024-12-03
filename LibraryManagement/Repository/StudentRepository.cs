@@ -16,41 +16,81 @@ namespace LibraryManagement.Repository
         }
         public async Task<List<Student>> GetAllAsync()
         {
-            return await _dbContext.Students.ToListAsync();
+            try
+            {
+                return await _dbContext.Students.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
         public async Task<Student> GetByIdAsync(int id)
          {
-             return await _dbContext.Students.FindAsync(id);
-         }
+            try
+            {
+                return await _dbContext.Students.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
+        }
 
         public async  Task<Student> UpdateStudentAsnc(Student student)
         {
-            var existingStudent = await _dbContext.Students.FindAsync(student.StudentId);
-            existingStudent.Name = student.Name;
-            existingStudent.Email = student.Email;
-            existingStudent.PhoneNumber = student.PhoneNumber;
-            existingStudent.Address = student.Address;
-            existingStudent.EnrollmentDate = student.EnrollmentDate;
-            existingStudent.StudentCardNo = student.StudentCardNo;
-            existingStudent.IsActive = student.IsActive;
-            await _dbContext.SaveChangesAsync();
-            return student;    
+            try
+            {
+                var existingStudent = await _dbContext.Students.FindAsync(student.StudentId);
+                existingStudent.Name = student.Name;
+                existingStudent.Email = student.Email;
+                existingStudent.PhoneNumber = student.PhoneNumber;
+                existingStudent.Address = student.Address;
+                existingStudent.EnrollmentDate = student.EnrollmentDate;
+                existingStudent.StudentCardNo = student.StudentCardNo;
+                existingStudent.IsActive = student.IsActive;
+                await _dbContext.SaveChangesAsync();
+                return student;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
         public async Task<Student> AddStudentAsync(Student student)
         {
-            await _dbContext.Students.AddAsync(student);
-            await _dbContext.SaveChangesAsync();
-            return student;
+            try
+            {
+                await _dbContext.Students.AddAsync(student);
+                await _dbContext.SaveChangesAsync();
+                return student;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
         public async Task<bool> DeleteStudentAsync(int id)
         {
-            var deleteStudent = await _dbContext.Students.FindAsync(id);
-            _dbContext.Students.Remove(deleteStudent);
-            await _dbContext.SaveChangesAsync();
-            return true;
+            try
+            {
+                var deleteStudent = await _dbContext.Students.FindAsync(id);
+                _dbContext.Students.Remove(deleteStudent);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
        

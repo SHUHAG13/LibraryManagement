@@ -102,31 +102,47 @@ namespace LibraryManagement.Repository
 
 
         }
-       
+
         public async Task<Author> UpdateAuthorAsync(UpdateAuthorDto authorDto)
         {
-            var existingAuthor = await _dbContext.Authors.FindAsync(authorDto.AuthorId);
-            if(existingAuthor==null)
+            try
             {
-                return null;
-            }
-            existingAuthor.Name = authorDto.Name;
-            existingAuthor.DateOfBirth = authorDto.DateOfBirth;
-            existingAuthor.Nationality = authorDto.Nationality;
-            existingAuthor.BooksWritten = authorDto.BooksWritten;
+                var existingAuthor = await _dbContext.Authors.FindAsync(authorDto.AuthorId);
+                if (existingAuthor == null)
+                {
+                    return null;
+                }
 
-            await _dbContext.SaveChangesAsync();
-            return existingAuthor;
-           
+
+                existingAuthor.Name = authorDto.Name;
+                existingAuthor.DateOfBirth = authorDto.DateOfBirth;
+                existingAuthor.Nationality = authorDto.Nationality;
+                existingAuthor.BooksWritten = authorDto.BooksWritten;
+
+
+                await _dbContext.SaveChangesAsync();
+                return existingAuthor;
+            }catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
         public async Task<Author> DeleteAuthorAsync(int id)
         {
-            var todeleteAuthor = await _dbContext.Authors.FirstOrDefaultAsync(i => i.AuthorId == id);
-            
-            _dbContext.Authors.Remove(todeleteAuthor);
-            await _dbContext.SaveChangesAsync();
-            return todeleteAuthor;
+            try
+            {
+                var todeleteAuthor = await _dbContext.Authors.FirstOrDefaultAsync(i => i.AuthorId == id);
+                _dbContext.Authors.Remove(todeleteAuthor);
+                await _dbContext.SaveChangesAsync();
+                return todeleteAuthor;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing the update.", ex);
+            }
         }
 
     }
